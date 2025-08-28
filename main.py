@@ -1,26 +1,27 @@
 import os
+from dotenv import load_dotenv
 from files.get_weather import get_weather
 from files.send_to_pushover import send_to_pushover
-from files.DataClass import Data
 
+load_dotenv()
 weather_api_key = os.environ.get("weather_api_key")
 pushover_api_token = os.environ.get("pushover_api_token")
 pushover_user_key = os.environ.get("pushover_user_key")
 
-lat="34.052235"
 lon="-118.243683"
-
+lat="34.052235"
 
 def main():
-    todaysweatherdata = get_weather(lat,lon,weather_api_key)
-    print(todaysweatherdata)
-    msg = ":), Today it's not raining or snowing!"
-    if "rain" in todaysweatherdata["main"]:
+    todays_weather_data = get_weather(lat,lon,weather_api_key)
+    weather_condition = todays_weather_data.get("weather", [{}])[0].get("main", "")
+    msg = ":)"
+    if "Rain" in weather_condition:
         msg = "It's raining :|" 
-    if "snow" in todaysweatherdata["main"]:
+    if "Snow" in weather_condition:
         msg = "It's snowing :|"
-    print(msg) 
+    send_to_pushover(msg,pushover_user_key,pushover_api_token)    
     pass
 
-# send_to_pushover(Today.msg,pushover_user_key,pushover_api_token)
 
+if __name__ == "__main__":
+    main()
